@@ -1,4 +1,4 @@
-#CC NetSim
+# CC NetSim
 This is a network simulator written in JAVA. The simulator is intended to provide an easy way to play with network layer concerns.
 
 The simulator is an interactive program that allows configuration of nodes and links while the simulation is running. Nodes may be exterior nodes or interior nodes. Interior nodes provide multiple links but cannot be connected to applications. Exterior nodes provide a single link and an interface to connect to an application. Links support setting a propagation delay and bandwidth.
@@ -7,12 +7,12 @@ Simulation timing is not precise. Rather than using a discrete event simulator a
 
 Network layer logic is introduced to the simulator via dynamic loading. Include your NetworkLayer implementation in the class path.
 
-#Running NetSim
+# Running NetSim
 Execution is started with configurator.Main
 
 This is an interactive CLI application. When started, Main will present a menu of commands. To reprint the menu of commands, is the command "help"
 
-#Wiring the Network
+# Wiring the Network
 A network can be thought of as a graph, nodes and edges.
   - The "add-node" command adds a node to the graph.
   - The "add-wire" command adds an edge to the graph.
@@ -27,17 +27,17 @@ Network layers, other than the physical layer and application layer, are instant
   - The "power-on" command powers on a specific node "power-on ALL" can be used to power on all of the nodes.
   - The "power-off" command powers off a specific node "power-off ALL" can be used to power off all of the nodes.
 
- Dynamic class loading is used to select the specific implementation at runtime, without needing to modify any existing code. Put the layer implementation class somewhere in the classpath and use the class name for loading.
+Dynamic class loading is used to select the specific implementation at runtime, without needing to modify any existing code. Put the layer implementation class somewhere in the classpath and use the class name for loading.
    - The "set-physical" command sets the physical layer implementation to ues
    - The "set-link" command sets the link layer implementation to use
    - The "set-network" command sets the network layer implementation to use
    - The "set-transport" command sets the transport layer implementation to use
 
- Dynamic class loading is also used to start applications on nodes. Put the application layer implementation class somewhere in the classpath and use the class name for loading
+Dynamic class loading is also used to start applications on nodes. Put the application layer implementation class somewhere in the classpath and use the class name for loading
    -- The "launch" starts an instance of a specefic app on a specific node
 
- #Example
- The following is a network with two nodes. lisa send characters to bob and bob logs them as they are received.
+# Example
+The following is a network with two nodes. lisa send characters to bob and bob logs them as they are received.
 
         set-transport transportLayer.NullTransport
         add-node bob 1
