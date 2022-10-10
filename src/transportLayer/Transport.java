@@ -6,6 +6,9 @@ import networkLayer.Network;
 
 import java.util.Set;
 
+/**
+ * Transport Layer representation
+ */
 public abstract class Transport {
     private Network networkLayer;
 

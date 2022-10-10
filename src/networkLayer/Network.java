@@ -2,10 +2,11 @@ package networkLayer;
 
 import exceptions.LayerNotConfigured;
 import linkLayer.Link;
-import linkLayer.LinkFrame;
 import transportLayer.Transport;
-import transportLayer.TransportMessage;
 
+/**
+ * Network Layer representation
+ */
 public abstract class Network {
     Link[] links;
     Transport transportLayer;

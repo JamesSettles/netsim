@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to power on nodes
+ */
 public class PowerOnCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*power-on\\s+(\\w+)\\s*$");
     private Graph graph;

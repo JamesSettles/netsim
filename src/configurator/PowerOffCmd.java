@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to power down nodes
+ */
 public class PowerOffCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*power-off\\s+(\\w+)\\s*$");
     private Graph graph;

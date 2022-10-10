@@ -14,6 +14,9 @@ import transportLayer.Transport;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Singleton to contain the simulation state
+ */
 public class SimConfig {
     private static final SimConfig config = new SimConfig();
 
@@ -77,6 +80,10 @@ public class SimConfig {
         return config;
     }
 
+    /**
+     * Generate a new Port of the currently set class
+     * @return a new Port instance
+     */
     public Port newPort() {
         try {
             return (Port) defaultPhysLayer.getConstructor().newInstance();
@@ -86,6 +93,10 @@ public class SimConfig {
         }
     }
 
+    /**
+     * Generate a new Link of the currently set class
+     * @return a new Link instance
+     */
     public Link newLink() {
         try {
             return (Link) defaultLinkLayer.getConstructor().newInstance();
@@ -95,6 +106,10 @@ public class SimConfig {
         }
     }
 
+    /**
+     * Generate a new Network of the currently set class
+     * @return a new Network instance
+     */
     public Network newNetwork() {
         try {
             return (Network) defaultNetworkLayer.getConstructor().newInstance();
@@ -104,6 +119,10 @@ public class SimConfig {
         }
     }
 
+    /**
+     * Generate a new Transport of the currently set class
+     * @return a new Transport instance
+     */
     public Transport newTransport() {
         try {
             return (Transport) defaultTransportLayer.getConstructor().newInstance();

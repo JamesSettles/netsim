@@ -6,6 +6,9 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to change the Link to be instantiated
+ */
 public class SetLinkCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*set-link\\s+(\\w+)\\s*$");
 

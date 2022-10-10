@@ -2,6 +2,9 @@ package configurator;
 
 import java.io.PrintStream;
 
+/**
+ * Abstraction to more easily untangle logging output from other output
+ */
 public class Logger {
     private static PrintStream LOG = System.err;
 

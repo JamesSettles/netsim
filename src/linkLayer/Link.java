@@ -5,6 +5,9 @@ import networkLayer.Network;
 import physicalLayer.Port;
 import transportLayer.TransportMessage;
 
+/**
+ * Link layer representatino
+ */
 public abstract class Link {
     Port physicalLayer;
     Network networkLayer;

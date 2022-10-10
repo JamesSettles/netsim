@@ -6,6 +6,9 @@ import exceptions.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 
+/**
+ * Implementation of a Port that uses a JAVA pipe for the wire
+ */
 public class PipeBackedPort extends Port implements Runnable {
     PipedInputStream rcv;
     PipedOutputStream snd;

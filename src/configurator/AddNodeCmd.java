@@ -6,10 +6,19 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to add a new node
+ */
 public class AddNodeCmd extends ConfigCommand {
+    /** regex for matching command strings */
     private static Pattern ptrn = Pattern.compile("^\\s*add-node\\s+(\\w+)\\s+(\\d+)\\s*$");
+    /** Graph where the node should be */
     private Graph graph;
 
+    /**
+     * AddNodeCmd attach to a particular graph
+     * @param g Graph to place nodes in
+     */
     public AddNodeCmd(Graph g) {
         graph = g;
     }

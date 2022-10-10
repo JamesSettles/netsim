@@ -6,6 +6,9 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to set the Transport to instantiate
+ */
 public class SetTransCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*set-transport\\s+([\\w\\.]+)\\s*$");
 

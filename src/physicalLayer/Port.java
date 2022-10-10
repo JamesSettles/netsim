@@ -4,6 +4,9 @@ import configurator.Wire;
 import exceptions.LayerNotConfigured;
 import linkLayer.Link;
 
+/**
+ * Physical Layer representation
+ */
 public abstract class Port {
     Link linkLayer;
 

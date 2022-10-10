@@ -6,6 +6,9 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand that starts an application on a node
+ */
 public class LaunchAppCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*launch\\s+(\\w+)\\s+([\\w\\.]+)(\\s+(\\w+))?\\s*$");
     private Graph graph;

@@ -10,6 +10,10 @@ public class AddWireCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*add-wire\\s+(\\w+)\\s+(\\d+)\\s+(\\w+)\\s+(\\d+)\\s*$");
     private Graph graph;
 
+    /**
+     * AddWireCmd attach to a particular graph
+     * @param g Graph to place nodes in
+     */
     public AddWireCmd(Graph g) {
         graph = g;
     }

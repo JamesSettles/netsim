@@ -6,6 +6,9 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * ConfigCommand to cause NetSim to exit
+ */
 public class QuitCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*(quit)|(exit)\\s*$");
     private Main prog;

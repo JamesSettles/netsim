@@ -12,6 +12,9 @@ import transportLayer.Transport;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+/**
+ * Representation of a node in the graph
+ */
 public class Node implements Runnable {
     String label;
 
@@ -45,6 +48,12 @@ public class Node implements Runnable {
         return edges[ap]==null;
     }
 
+    /**
+     * Connects a wire but does not start it
+     * @param ap port to connect to
+     * @param wire wire to connect
+     * @return the port instance the wire is connected to
+     */
     public Port connect(int ap, Wire wire) {
         if(edges[ap] != null) {
             throw new PortNotAvailable(ap);
@@ -54,6 +63,11 @@ public class Node implements Runnable {
         return ports[ap];
     }
 
+    /**
+     * Launches an application on this node
+     * @param app name of the Application class to be instantiated
+     * @param args any additional information for the application
+     */
     public void launchApplication(String app, String args) {
         Application a = null;
         try {
@@ -68,6 +82,9 @@ public class Node implements Runnable {
         }
     }
 
+    /**
+     * Starts the node
+     */
     public void powerOn() {
         // Instantiate all the parts
         // instantiate link
@@ -99,6 +116,10 @@ public class Node implements Runnable {
         running = true;
         interruptor = new Thread(this);
     }
+
+    /**
+     * Stops the node
+     */
     public void powerOff() {
         if(!running) { return; } // If the node isn't up, there's nothing to bring down
         running = false;
@@ -110,7 +131,6 @@ public class Node implements Runnable {
         for(int i=0; i<getDegree(); i++) {
             linkLayer[i].bringDown();
         }
-
     }
 
     /**
@@ -143,6 +163,10 @@ public class Node implements Runnable {
         return label;
     }
 
+    /**
+     * Information about the node
+     * @return additional node info
+     */
     public String stateInfo() {
         if(running) {
             return "R";
