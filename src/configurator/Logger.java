@@ -18,6 +18,15 @@ public class Logger {
     }
 
     /**
+     * Logs a message to the default log stream
+     * @param msg string to log
+     */
+    public static void warn(String msg) {
+        String logline = String.format("%d WARNING: %s",System.currentTimeMillis(),msg);
+        LOG.println(logline);
+    }
+
+    /**
      * Converts an arbitrary byte array to a String in hex
      * @param data bytes to convert
      * @return String representation

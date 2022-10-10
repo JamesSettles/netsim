@@ -8,6 +8,21 @@ import java.util.List;
  * commands. (In retrospect these concerns should not have been mixed)
  */
 public abstract class ConfigCommand {
+    public static final String APP = "Application";
+    public static final String TRN = "Transport";
+    public static final String NET = "Network";
+    public static final String LNK = "Link";
+    public static final String PHY = "Physical";
+    public static final String GEN = "General";
+    private final String cmd_section;
+
+    public ConfigCommand() {
+        cmd_section = GEN;
+    }
+    public ConfigCommand(String s) {
+        cmd_section = s;
+    }
+
     private static final CommandSet commandSet = new CommandSet();
 
     /**
@@ -49,8 +64,8 @@ public abstract class ConfigCommand {
      *
      * @return section to display in
      */
-    public String commandSection() {
-        return "General";
+    public final String commandSection() {
+        return cmd_section;
     }
 
     /**

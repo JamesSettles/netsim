@@ -10,11 +10,10 @@ import java.util.regex.Pattern;
  * ConfigCommand to change the Link to be instantiated
  */
 public class SetLinkCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*set-link\\s+(\\w+)\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*set-link\\s+([\\w\\.]+)\\s*$");
 
-    @Override
-    public String commandSection() {
-        return "Link";
+    public SetLinkCmd() {
+        super(LNK);
     }
 
     @Override

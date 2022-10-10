@@ -6,19 +6,14 @@ import exceptions.BadCommandRouting;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * ConfigCommand that starts an application on a node
- */
-public class LaunchAppCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*launch\\s+(\\w+)\\s+([\\w\\.]+)(\\s+(.+[^\\s]))?\\s*$");
+public class ConfTransCmd extends ConfigCommand {
+    private static Pattern ptrn = Pattern.compile("^\\s*conf-trans\\s+(\\w+)(\\s+(.+[^\\s]))?\\s*$");
     private Graph graph;
 
-    public LaunchAppCmd(Graph g) {
-        super(APP);
+    public ConfTransCmd(Graph g) {
+        super(TRN);
         graph = g;
     }
-
-    @Override
     public boolean matches(String inp) {
         Matcher m = ptrn.matcher(inp);
         return m.matches();
@@ -31,19 +26,18 @@ public class LaunchAppCmd extends ConfigCommand {
             throw new BadCommandRouting(this.getClass().toString(), inp);
         }
         String name = m.group(1);
-        String clazz = m.group(2);
-        String args = m.group(4);
+        String args = m.group(3);
         Node n = graph.getNode(name);
-        n.launchApplication(clazz, args);
+        n.setTransConfig(args);
     }
 
     @Override
     public String toString() {
-        return "launch <label> <AppClassname> [args]";
+        return "conf-trans <label> <args>";
     }
 
     @Override
     public String helpString() {
-        return toString()+"\n  launches <AppClassname> on node <label> with [args]";
+        return toString()+"\n  configures transport layer on node <label> with <args>";
     }
 }
