@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * ConfigCommand to set the Port to instantiate
  */
 public class SetPhysCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*set-physical\\s+(\\w+)\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*set-physical\\s+([\\w\\.]+)\\s*$");
 
     public SetPhysCmd() {
         super(PHY);

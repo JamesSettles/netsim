@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfNetCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*conf-net\\s+\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*conf-net\\s+(\\w+)(\\s+(.+[^\\s]))?\\s*$");
     private Graph graph;
 
     public ConfNetCmd(Graph g) {
@@ -26,7 +26,7 @@ public class ConfNetCmd extends ConfigCommand {
             throw new BadCommandRouting(this.getClass().toString(), inp);
         }
         String name = m.group(1);
-        String args = m.group(2);
+        String args = m.group(3);
         Node n = graph.getNode(name);
         n.setNetConfig(args);
     }

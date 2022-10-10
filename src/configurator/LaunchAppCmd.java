@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * ConfigCommand that starts an application on a node
  */
 public class LaunchAppCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*launch\\s+(\\w+)\\s+([\\w\\.]+)(\\s+(\\w+))?\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*launch\\s+(\\w+)\\s+([\\w\\.]+)(\\s+(.+[^\\s]))?\\s*$");
     private Graph graph;
 
     public LaunchAppCmd(Graph g) {
@@ -32,7 +32,7 @@ public class LaunchAppCmd extends ConfigCommand {
         }
         String name = m.group(1);
         String clazz = m.group(2);
-        String args = m.group(3);
+        String args = m.group(4);
         Node n = graph.getNode(name);
         n.launchApplication(clazz, args);
     }

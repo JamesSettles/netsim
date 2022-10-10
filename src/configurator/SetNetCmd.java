@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * ConfigCommand to set the Network to instantiate
  */
 public class SetNetCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*set-network\\s+(\\w+)\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*set-network\\s+([\\w\\.]+)\\s*$");
 
     public SetNetCmd() {
         super(NET);

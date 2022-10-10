@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfLinkCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*conf-link\\s+(\\w+)\\s+(\\d+)\\s*$");
+    private static Pattern ptrn = Pattern.compile("^\\s*conf-link\\s+(\\w+)\\s+(\\d+)(\\s+(.+[^\\s]))?\\s*$");
     private Graph graph;
 
     public ConfLinkCmd(Graph g) {
@@ -27,7 +27,7 @@ public class ConfLinkCmd extends ConfigCommand {
         }
         String name = m.group(1);
         int link = Integer.parseInt(m.group(2));
-        String args = m.group(3);
+        String args = m.group(4);
         Node n = graph.getNode(name);
         n.setLinkConfig(link, args);
     }
