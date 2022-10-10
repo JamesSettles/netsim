@@ -6,6 +6,7 @@ import exceptions.PortNotAvailable;
 import exceptions.ReservedWordUsed;
 import linkLayer.Link;
 import networkLayer.Network;
+import physicalLayer.NoPort;
 import physicalLayer.Port;
 import transportLayer.Transport;
 
@@ -97,11 +98,14 @@ public class Node implements Runnable {
         // instantiate link
         linkLayer = new Link[getDegree()];
         for(int i=0; i<getDegree(); i++) {
-            if(ports[i]!=null) {
-                linkLayer[i] = SimConfig.getConfig().newLink();
-                linkLayer[i].setPhysicalLayer(ports[i]);
-                ports[i].setLinkLayer(linkLayer[i]);
+            // A port without a wire might exist...
+            if(ports[i]==null) {
+                Logger.warn(getLabel()+" port"+i+" is not wired and NoPort instance will be used");
+                ports[i] = new NoPort();
             }
+            linkLayer[i] = SimConfig.getConfig().newLink();
+            linkLayer[i].setPhysicalLayer(ports[i]);
+            ports[i].setLinkLayer(linkLayer[i]);
         }
         // instantiate network
         netLayer = SimConfig.getConfig().newNetwork();
