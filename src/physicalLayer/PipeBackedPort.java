@@ -5,12 +5,7 @@ import exceptions.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of a Port that uses a JAVA pipe for the wire
@@ -91,6 +86,9 @@ public class PipeBackedPort extends Port implements Runnable {
                 bb.rewind();
                 len = bb.getInt();
                 data = rcv.readNBytes(len);
+                if(!running) {
+                    continue; // can't receive on a down port
+                }
                 getLinkLayer().receiveFromPhysical(data);
             }
         } catch (IOException e) {
@@ -144,6 +142,9 @@ public class PipeBackedPort extends Port implements Runnable {
                     continue;
                 }
                 try {
+                    if(!running) {
+                        continue; // Can't send on a down port
+                    }
                     snd.write(data);
                 } catch (IOException e) {
                     throw new BrokenLayer("Physical");
