@@ -1,0 +1,8 @@
+package exceptions;
+
+public class BadCommandRouting extends NetSimException {
+
+    public BadCommandRouting(String classname, String inp) {
+        super(classname+" can't process the input "+inp);
+    }
+}
