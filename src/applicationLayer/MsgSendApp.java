@@ -24,7 +24,6 @@ public class MsgSendApp extends Application implements Runnable {
     public void bringUp() {
         super.bringUp();
         execThread = new Thread(this);
-        execThread.setDaemon(true); // Threads must be daemon thread or the "exit" command won't work
         execThread.start();
     }
 
@@ -52,10 +51,6 @@ public class MsgSendApp extends Application implements Runnable {
             getTransport().receiveFromApplication(this, buf);
         }
         getTransport().removeApplication(this);
-        try {
-            execThread.join(); // Need to join because of an annoying problem with pipes if a writing thread ends
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 }

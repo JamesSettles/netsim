@@ -5,6 +5,12 @@ import exceptions.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of a Port that uses a JAVA pipe for the wire
@@ -15,9 +21,12 @@ public class PipeBackedPort extends Port implements Runnable {
     Wire wire;
 
     Thread rcvThread;
+    Thread sndThread; // Needed to avoid broken pipes when apps finish on a node
+    LinkedBlockingQueue<byte[]> sndQueue;
     private boolean running;
 
     public PipeBackedPort() {
+        sndQueue = new LinkedBlockingQueue<byte[]>();
     }
 
     /**
@@ -30,9 +39,17 @@ public class PipeBackedPort extends Port implements Runnable {
             throw new LayerNotConfigured("physical");
         }
         running = true;
-        rcvThread = new Thread(this);
-        rcvThread.setDaemon(true);
-        rcvThread.start();
+        if(rcvThread==null) {
+            rcvThread = new Thread(this);
+            rcvThread.setDaemon(true);
+            rcvThread.start();
+        }
+        if(sndThread==null) {
+            Runnable sender = new Sender();
+            sndThread = new Thread(sender);
+            sndThread.setDaemon(true);
+            sndThread.start();
+        }
     }
 
     /**
@@ -41,7 +58,6 @@ public class PipeBackedPort extends Port implements Runnable {
     @Override
     public void bringDown() {
         running = false;
-        rcvThread = null;
     }
 
     public void interrupt() { }
@@ -55,14 +71,10 @@ public class PipeBackedPort extends Port implements Runnable {
         if(wire.isCut()) { return; }
         if(bits==null) { throw new CantBeNull("bits"); }
         if(bits.length>Integer.MAX_VALUE) { throw new UnsupportedSize("physical",bits.length); }
-        ByteBuffer bb = ByteBuffer.allocate(4);
+        ByteBuffer bb = ByteBuffer.allocate(4+bits.length);
         bb.putInt(bits.length);
-        try {
-            snd.write(bb.array());
-            snd.write(bits);
-        } catch (IOException e) {
-            throw new BrokenLayer("physical");
-        }
+        bb.put(bits);
+        sndQueue.add(bb.array());
     }
 
     /**
@@ -74,7 +86,7 @@ public class PipeBackedPort extends Port implements Runnable {
         int len;
         byte[] data;
         try {
-            while (running) {
+            while (true) {
                 rcv.readNBytes(bb.array(), 0, 4);
                 bb.rewind();
                 len = bb.getInt();
@@ -118,6 +130,25 @@ public class PipeBackedPort extends Port implements Runnable {
         } catch (IOException e) {
             throw new CantCreateLayer("physical");
         }
+    }
 
+    private class Sender implements Runnable {
+
+        @Override
+        public void run() {
+            while(true) {
+                byte[] data = new byte[0];
+                try {
+                    data = sndQueue.take();
+                } catch (InterruptedException e) {
+                    continue;
+                }
+                try {
+                    snd.write(data);
+                } catch (IOException e) {
+                    throw new BrokenLayer("Physical");
+                }
+            }
+        }
     }
 }
