@@ -12,15 +12,13 @@ import java.util.regex.Pattern;
 public class SetPhysCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*set-physical\\s+(\\w+)\\s*$");
 
+    public SetPhysCmd() {
+        super(PHY);
+    }
     @Override
     public boolean matches(String inp) {
         Matcher m = ptrn.matcher(inp);
         return m.matches();
-    }
-
-    @Override
-    public String commandSection() {
-        return "Physical";
     }
 
     @Override

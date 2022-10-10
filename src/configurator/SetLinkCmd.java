@@ -12,9 +12,8 @@ import java.util.regex.Pattern;
 public class SetLinkCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*set-link\\s+(\\w+)\\s*$");
 
-    @Override
-    public String commandSection() {
-        return "Link";
+    public SetLinkCmd() {
+        super(LNK);
     }
 
     @Override

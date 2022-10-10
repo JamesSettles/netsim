@@ -1,23 +1,19 @@
 package configurator;
 
-import configurator.SimConfig;
 import configurator.commands.ConfigCommand;
 import exceptions.BadCommandRouting;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * ConfigCommand to set the Network to instantiate
- */
-public class SetNetCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*set-network\\s+(\\w+)\\s*$");
+public class ConfLinkCmd extends ConfigCommand {
+    private static Pattern ptrn = Pattern.compile("^\\s*conf-link\\s+(\\w+)\\s+(\\d+)\\s*$");
+    private Graph graph;
 
-    public SetNetCmd() {
-        super(NET);
+    public ConfLinkCmd(Graph g) {
+        super(LNK);
+        graph = g;
     }
-
-    @Override
     public boolean matches(String inp) {
         Matcher m = ptrn.matcher(inp);
         return m.matches();
@@ -29,16 +25,20 @@ public class SetNetCmd extends ConfigCommand {
         if(!m.matches()) {
             throw new BadCommandRouting(this.getClass().toString(), inp);
         }
-        SimConfig.getConfig().setDefaultNetworkLayer(m.group(1));
+        String name = m.group(1);
+        int link = Integer.parseInt(m.group(2));
+        String args = m.group(3);
+        Node n = graph.getNode(name);
+        n.setLinkConfig(link, args);
     }
 
     @Override
     public String toString() {
-        return "set-network <NetworkClass>";
+        return "conf-link <label> <port> <args>";
     }
 
     @Override
     public String helpString() {
-        return this.toString();
+        return toString()+"\n  configures link <port> on node <label> with <args>";
     }
 }

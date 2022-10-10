@@ -12,9 +12,8 @@ import java.util.regex.Pattern;
 public class SetTransCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*set-transport\\s+([\\w\\.]+)\\s*$");
 
-    @Override
-    public String commandSection() {
-        return "Transport";
+    public SetTransCmd() {
+        super(TRN);
     }
 
     @Override

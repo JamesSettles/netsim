@@ -24,9 +24,13 @@ public class Node implements Runnable {
 
     ArrayList<Application> apps = new ArrayList<>();
     Transport transLayer;
+    private String transConfig;
     Network netLayer;
+    private String netConfig;
     Link[] linkLayer;
+    private String[] linkConfig;
     private Port[] ports;
+    private String[] portConfig;
 
     Thread interruptor;
     boolean running = false;
@@ -38,6 +42,9 @@ public class Node implements Runnable {
         label=n;
         edges = new Wire[degree];
         ports = new Port[degree];
+
+        portConfig = new String[degree];
+        linkConfig = new String[degree];
     }
 
     public int getDegree() { return edges.length; }
@@ -103,6 +110,47 @@ public class Node implements Runnable {
         transLayer = SimConfig.getConfig().newTransport();
         transLayer.setNetworkLayer(netLayer);
         netLayer.setTransportLayer(transLayer);
+
+        // Pass in additional startup arguments
+        Configurable c;
+        for(int i=0; i<ports.length; i++) {
+            Port p = ports[i];
+            if(p!=null && portConfig[i]!=null) {
+                try {
+                    c = (Configurable) p;
+                    c.configureWith(portConfig[i]);
+                } catch (ClassCastException e) {
+                    // It's not configurable... skip...
+                }
+            }
+        }
+        for(int i=0; i<linkLayer.length; i++) {
+            Link l = linkLayer[i];
+            if(l!=null && linkConfig[i]!=null) {
+                try {
+                    c = (Configurable) l;
+                    c.configureWith(linkConfig[i]);
+                } catch (ClassCastException e) {
+                    // It's not configurable... skip...
+                }
+            }
+        }
+        if(netLayer!=null && netConfig!=null) {
+            try {
+                c = (Configurable) netLayer;
+                c.configureWith(netConfig);
+            } catch (ClassCastException e) {
+                // It's not configurable... skip...
+            }
+        }
+        if(transLayer!=null && transConfig!=null) {
+            try {
+                c = (Configurable) transLayer;
+                c.configureWith(transConfig);
+            } catch (ClassCastException e) {
+                // It's not configurable... skip...
+            }
+        }
 
         // Bring up the layers
         for(int i=0; i<getDegree(); i++) {
@@ -173,5 +221,18 @@ public class Node implements Runnable {
         } else {
             return "H";
         }
+    }
+
+    public void setPhysConfig(int port, String args) {
+        portConfig[port] = args;
+    }
+    public void setLinkConfig(int link, String args) {
+        linkConfig[link] = args;
+    }
+    public void setNetConfig(String args) {
+        netConfig = args;
+    }
+    public void setTransConfig(String args) {
+        transConfig = args;
     }
 }

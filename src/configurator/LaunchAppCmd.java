@@ -13,12 +13,8 @@ public class LaunchAppCmd extends ConfigCommand {
     private static Pattern ptrn = Pattern.compile("^\\s*launch\\s+(\\w+)\\s+([\\w\\.]+)(\\s+(\\w+))?\\s*$");
     private Graph graph;
 
-    @Override
-    public String commandSection() {
-        return "Application";
-    }
-
     public LaunchAppCmd(Graph g) {
+        super(APP);
         graph = g;
     }
 

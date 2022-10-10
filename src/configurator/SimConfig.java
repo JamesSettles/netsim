@@ -74,6 +74,10 @@ public class SimConfig {
         ConfigCommand.registerCommand(new SetNetCmd());
         ConfigCommand.registerCommand(new SetTransCmd());
         ConfigCommand.registerCommand(new LaunchAppCmd(network));
+        ConfigCommand.registerCommand(new ConfPhysCmd(network));
+        ConfigCommand.registerCommand(new ConfLinkCmd(network));
+        ConfigCommand.registerCommand(new ConfNetCmd(network));
+        ConfigCommand.registerCommand(new ConfTransCmd(network));
     }
 
     public static SimConfig getConfig() {

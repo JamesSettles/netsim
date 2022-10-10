@@ -1,23 +1,19 @@
 package configurator;
 
-import configurator.SimConfig;
 import configurator.commands.ConfigCommand;
 import exceptions.BadCommandRouting;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * ConfigCommand to set the Network to instantiate
- */
-public class SetNetCmd extends ConfigCommand {
-    private static Pattern ptrn = Pattern.compile("^\\s*set-network\\s+(\\w+)\\s*$");
+public class ConfNetCmd extends ConfigCommand {
+    private static Pattern ptrn = Pattern.compile("^\\s*conf-net\\s+\\s*$");
+    private Graph graph;
 
-    public SetNetCmd() {
+    public ConfNetCmd(Graph g) {
         super(NET);
+        graph = g;
     }
-
-    @Override
     public boolean matches(String inp) {
         Matcher m = ptrn.matcher(inp);
         return m.matches();
@@ -29,16 +25,19 @@ public class SetNetCmd extends ConfigCommand {
         if(!m.matches()) {
             throw new BadCommandRouting(this.getClass().toString(), inp);
         }
-        SimConfig.getConfig().setDefaultNetworkLayer(m.group(1));
+        String name = m.group(1);
+        String args = m.group(2);
+        Node n = graph.getNode(name);
+        n.setNetConfig(args);
     }
 
     @Override
     public String toString() {
-        return "set-network <NetworkClass>";
+        return "conf-net <label> <args>";
     }
 
     @Override
     public String helpString() {
-        return this.toString();
+        return toString()+"\n  configures network layer on node <label> with <args>";
     }
 }
