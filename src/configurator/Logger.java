@@ -1,5 +1,6 @@
 package configurator;
 
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 /**
@@ -9,12 +10,22 @@ public class Logger {
     private static PrintStream LOG = System.err;
 
     /**
+     * Routes all future log messages to a specific file
+     * @param fname path as a string to write to
+     * @throws FileNotFoundException when the stream can't be created
+     */
+    public static void routeToFile(String fname) throws FileNotFoundException {
+        LOG = new PrintStream(fname);
+    }
+
+    /**
      * Logs a message to the default log stream
      * @param msg string to log
      */
     public static void log(String msg) {
         String logline = String.format("%d %s",System.currentTimeMillis(),msg);
         LOG.println(logline);
+        LOG.flush();
     }
 
     /**

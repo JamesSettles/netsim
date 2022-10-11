@@ -1,0 +1,26 @@
+This file contains a program to do a simple test of the StaticNetwork network layer.
+
+A simple 4 node network is constructed. bob is a router with connections to marci, dani, and jane. The demo should show a message being sent by marci and received by only of the two other end points.
+
+In the demo:
+marci runs AddrMsgSendApp
+dani and jane run LogTargetCmd
+bob doesn't run an application but otherwise has the same stack as the others.
+
+add-node marci 1
+add-node dani 1
+add-node jane 1
+add-node bob 3
+set-network networkLayer.StaticNetwork
+set-transport transportLayer.NullTransport
+add-wire marci 0 bob 0
+add-wire dani 0 bob 1
+add-wire jane 0 bob 2
+conf-net marci StaticNetDemo/marci.routes
+conf-net dani  StaticNetDemo/dani.routes
+conf-net jane  StaticNetDemo/jane.routes
+conf-net bob   StaticNetDemo/bob.routes
+power-on ALL
+launch jane applicationLayer.LogSpoolApp
+launch dani applicationLayer.LogSpoolApp
+launch marci applicationLayer.AddrMsgSendApp 3|Hello dani! Hope this message doesn't reach jane...

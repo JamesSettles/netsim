@@ -22,7 +22,7 @@ The nodes connected by an edge must be created prior to creating the edge.
 
 When the edge is created, the wire will also be instantiated and started between the two nodes. The physical layer is the only layer instantiated at started prior to nodes being "powered on".
 
-#Configuring the Stack
+# Configuring the Stack
 Network layers, other than the physical layer and application layer, are instantiated when a node is powered on. The bringUp() methods for each node are called from bottom to top: links, network, and transport. When powered down, the bringDown() methods for each node are called from top to bottom: transport, network, links. Physical, link, network, and transport layer instances that implement the Configurable interface will be handed their additional configuration string before bringUp() is called on any instance.
   - The "power-on" command powers on a specific node "power-on ALL" can be used to power on all of the nodes.
   - The "power-off" command powers off a specific node "power-off ALL" can be used to power off all of the nodes.
@@ -42,7 +42,7 @@ Per node additional arguments can be provided to layers via the conf-* instructi
 Dynamic class loading is also used to start applications on nodes. Put the application layer implementation class somewhere in the classpath and use the class name for loading
    -- The "launch" command starts an instance of a specefic app on a specific node
 
-# Example
+# Simple Example
 The following is a network with two nodes. lisa send characters to bob and bob logs them as they are received.
 
         set-transport transportLayer.NullTransport
@@ -53,3 +53,6 @@ The following is a network with two nodes. lisa send characters to bob and bob l
         power-on lisa
         launch bob applicationLayer.LogSpoolApp
         launch lisa applicationLayer.MsgSendApp Hello
+
+# More complex example
+The StaticNetDemo directory includes an example execution with a network layer implementation that uses statically configured routing tables at each node. The demo sends a unicast message from marci to dani via bob.

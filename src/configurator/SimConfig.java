@@ -78,6 +78,7 @@ public class SimConfig {
         ConfigCommand.registerCommand(new ConfLinkCmd(network));
         ConfigCommand.registerCommand(new ConfNetCmd(network));
         ConfigCommand.registerCommand(new ConfTransCmd(network));
+        ConfigCommand.registerCommand(new LogTargetCmd());
     }
 
     public static SimConfig getConfig() {
