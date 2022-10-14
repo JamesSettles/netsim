@@ -1,0 +1,20 @@
+add-node n1 2
+add-node n2 2
+add-node n3 2
+add-node n4 2
+add-node n5 2
+set-network networkLayer.DVNetwork
+set-transport transportLayer.NullTransport
+add-wire n1 0 n2 0
+add-wire n2 1 n3 0
+add-wire n3 1 n4 0
+add-wire n1 1 n5 0
+add-wire n4 1 n5 1
+conf-net n1 DVDemo/n1.txt
+conf-net n2 DVDemo/n2.txt
+conf-net n3 DVDemo/n3.txt
+conf-net n4 DVDemo/n4.txt
+conf-net n5 DVDemo/n5.txt
+power-on ALL
+launch n2 applicationLayer.LogSpoolApp
+launch n5 applicationLayer.DVAddrMsgSendApp n2|Hello n2, its me n5

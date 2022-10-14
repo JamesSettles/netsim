@@ -4,7 +4,7 @@ package exceptions;
  * <p>Should not be thrown directly; subclasses are expected to be thrown.</p>
  */
 public class NetSimException extends RuntimeException {
-    protected NetSimException(String msg) {
+    NetSimException(String msg) {
         super(msg);
     }
 }
