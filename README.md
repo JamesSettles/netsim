@@ -1,3 +1,10 @@
+# Authors
+- [JamesSettles](https://github.com/JamesSettles)
+- [RobertMusser](https://github.com/RobertMusser)
+
+# Languages Used 
+- Java
+
 # CC NetSim
 This is a network simulator written in JAVA. The simulator is intended to provide an easy way to play with network layer concerns.
 
@@ -41,6 +48,9 @@ Per node additional arguments can be provided to layers via the conf-* instructi
 
 Dynamic class loading is also used to start applications on nodes. Put the application layer implementation class somewhere in the classpath and use the class name for loading
    -- The "launch" command starts an instance of a specefic app on a specific node
+
+# Distance Vector Routing in the Network Layer
+Distance vector routing is availible on the netsim. If you want to use distance vector routing in the network layer configure the network to use the DVNetwork class. The applications UnicastChatApp, SnifferApp, and SniffEditApp all run using the DVNetwork.
 
 # Simple Example
 The following is a network with two nodes. lisa send characters to bob and bob logs them as they are received.

@@ -1,3 +1,14 @@
+This file contains a program to do a simple test of the Distance Vector network layer.
+
+A 5 node network is constructed. Each node is connected to two other nodes in a ring formation.
+
+In the demo:
+n2 runs the chat app
+n1 runs the SniffEditApp to edit messages sent to n2
+n5 runs the chat app and sends a message to n2
+n4 runs the SnifferApp
+n3 runs the chat app and sends a message to n5, n4 sniffs this message
+
 add-node n1 2
 add-node n2 2
 add-node n3 2
@@ -19,3 +30,6 @@ power-on ALL
 launch n2 applicationLayer.UnicastChatApp
 launch n1 applicationLayer.SniffEditApp n2
 launch n5 applicationLayer.UnicastChatApp n2|hey
+launch n4 applicationLayer.SnifferApp
+launch n3 applicationLayer.UnicastChatApp n5|what's up n5??
+
