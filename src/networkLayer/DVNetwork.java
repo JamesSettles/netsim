@@ -7,36 +7,18 @@ import configurator.Configurable;
 import configurator.Logger;
 import exceptions.BadDestAddress;
 
-
-/*
-     * Wake-up
-    Step 1:
-    -- Wake up and introspect (learn my address, my network, # of links)
-        - send out addr on all links on wake up
-        - listen for addrs 
-            - now have immediate addrs
-        - broadcast immediate addrs 
-    Step 2:
-    -- Broadcast that "I'm alive" (This is my address and these are the addresses I know how to get to)
-    Step 3:
-    -- Declare victory since everything else is event driven...
-
-    Receive Broadcast
-    Step 1:
-    -- Add to the routing table what ever networks were sent that I don't know abo
-    ut
-    Step 2:
-    -- Be friendly and reciprocate (On all links, send my table)
-    Step 3:
-    -- Go to step 1...
-     */
-
 public class DVNetwork extends Network implements Configurable  {
     // Routing table that maps address to an array containing port and hop count
     HashMap<String, int[]> routingTable;
     int numLinks;
-    String addr; // addr is a two char string
+    String addr;
+    // Variables that concern packet sniffing
+    Boolean isSniffable = false;
+    String addrToEditMsgsOf = " ";
     
+    /**
+     * Sends the routing table out on all ports
+     */
     public void broadCastRoutingTable(){
         // Wake up msg formatted as myAddress:connection1,hopCount:conection2,hopcount etc 
         String wakeUpMsg = addr;
@@ -51,18 +33,54 @@ public class DVNetwork extends Network implements Configurable  {
         DVMeta meta = new DVMeta("None",this.addr);
         NetworkPacket np = new NetworkPacket(meta, msg);
         for(int linkNum = 0;linkNum < numLinks;linkNum++){
-            // Send out addr
             links[linkNum].receiveFromNetwork(toRawBytes(np));
-            // Send out immediate addrs and hop count
         }
-
     }
+    /**
+     * Parses a received routing table broadcast message
+     * @param receivedBroadcast broadcast routing table message
+     */
+    public void processReceivedBroadCast(String receivedBroadcast){
+        Boolean receivedNewEntry = false;
+        String addr;
+        int port;
+        int hopCount;
+        String[] splitBroadcast = receivedBroadcast.split(":");
+        // gets the port from the routing table
+        port = routingTable.get(splitBroadcast[0])[0];
+        for (int i = 1; i <splitBroadcast.length;i++){
+            addr =  splitBroadcast[i].split(",")[0];
+            // Hop count should be +1 of whatever the hop was to your neighbors
+            hopCount =  Integer.valueOf(splitBroadcast[i].split(",")[1]) + 1;
+            // put into routing table if not yoursel
+            if(!addr.equals(this.addr)){
+                // Check for addr already added to routing table
+                // If the addr is already present, only replace that entry with new entry if the hopCount is lower
+                // This means each routing table only contains the fastest route to each addr
+                if(routingTable.containsKey(addr) && routingTable.get(addr)[1] <= hopCount){
+                    continue;
+                }
+                routingTable.put(addr,new int[]{port,hopCount}); 
+                receivedNewEntry = true;
+            }
+        }
+        if(receivedNewEntry){
+            broadCastRoutingTable();
+        }
+    }
+
+    /**
+     * When the network layer is brought up it introspects about the number of links and then
+     * broadcasts the routing table
+     */
     @Override
     public void bringUp(){
         numLinks = links.length;
         broadCastRoutingTable();
     }
-    
+    /**
+     * Powering off a node prints out its routing table. This is largley for testing purposes.
+     */
     @Override
     public void bringDown() {
         // TODO Auto-generated method stub
@@ -83,14 +101,16 @@ public class DVNetwork extends Network implements Configurable  {
     @Override
     public void receiveFromTransport(byte[] p) {
         // TODO Auto-generated method stub
-        recieveFromLink(p);
-        
-        
+        recieveFromLink(p);        
     }
-
+    /**
+     * Receive bytes from the link layer, 
+     * parse them into network packets, 
+     * forward them or send them to application layer,
+     * or process recieved routing tables
+     */
     @Override
     public void recieveFromLink(byte[] f) {
-        // TODO Auto-generated method stub
         NetworkPacket np = fromRawBytes(f);
         String dest = ((DVMeta)np.meta()).getDest();
         String source = ((DVMeta)np.meta()).getSource();
@@ -101,10 +121,21 @@ public class DVNetwork extends Network implements Configurable  {
             getTransportLayer().receiveFromNetwork(toRawBytes(np));
         }else if(!dest.equals(this.addr)){
             // forward packet
+            if(isSniffable){
+                getTransportLayer().receiveFromNetwork(toRawBytes(np));
+            }
+            if(this.addrToEditMsgsOf.equals(dest)){
+                np = editSniffedMsg(np);
+            }
             forwardPacket(dest, np);
+            
         }
     }
-
+    /**
+     * Forwards a packet to given addr
+     * @param dest addr to forward to 
+     * @param np packet to forward
+     */
     public void forwardPacket(String dest, NetworkPacket np){
         if(routingTable.containsKey(dest)){
             int port = routingTable.get(dest)[0];
@@ -114,39 +145,11 @@ public class DVNetwork extends Network implements Configurable  {
             throw new BadDestAddress(dest);
         }
     }
-
-    public void processReceivedBroadCast(String receivedBroadcast){
-        // Some of this code is technically redundant because the broadcast message no longer needs to
-        // contain the source of the msg
-        Boolean receivedNewEntry = false;
-        String addr;
-        int port;
-        int hopCount;
-        String[] splitBroadcast = receivedBroadcast.split(":");
-        // gets the port from the routing table
-        port = routingTable.get(splitBroadcast[0])[0];
-        for (int i = 1; i <splitBroadcast.length;i++){
-            addr =  splitBroadcast[i].split(",")[0];
-            // Hop count should be +1 of whatever the hop was to your neighbors
-            hopCount =  Integer.valueOf(splitBroadcast[i].split(",")[1]) + 1;
-            // put into routing table if not yoursel
-            if(!addr.equals(this.addr)){
-                // Check for addr already added to routing table
-                // If the addr is already present, only replace that entry with new entry if the hopCount is lower
-                // This means each routing table only contains the fastest route
-                if(routingTable.containsKey(addr) && routingTable.get(addr)[1] <= hopCount){
-                    continue;
-                }
-                routingTable.put(addr,new int[]{port,hopCount}); 
-                receivedNewEntry = true;
-            }
-        }
-        if(receivedNewEntry){
-            broadCastRoutingTable();
-        }
-
-    }
-
+    /**
+     * Converts from networkPacket to raw bytes
+     * Converts a string containing {dest + ";" source + ";" + data} to bytes
+     * @return result of calling .getBytes on the string version of the network packet
+     */
     @Override
     public byte[] toRawBytes(NetworkPacket np) {
         // just construct a string and turn it into raw bytes
@@ -159,7 +162,11 @@ public class DVNetwork extends Network implements Configurable  {
         System.arraycopy(np.data(), 0, result, processedNP.length, np.data().length);
         return result;
     }
-
+    /**
+     * Converts the bits to a string and parses that string to form the network packet
+     * @param bits bit representation of the network packets
+     * @return fully formed network packet
+     */
     @Override
     public NetworkPacket fromRawBytes(byte[] bits) {
         String strMsg = new String(bits);
@@ -179,12 +186,16 @@ public class DVNetwork extends Network implements Configurable  {
         NetworkPacket np = new NetworkPacket(meta, data.getBytes());
         return np;
     }
-
+    /**
+     * Reads in a file containing a node's addr and its immediate neighbors ports and addresses,
+     * adds them to its inital routing table
+     * @param filename name of the file to readFrom
+     */
     @Override
-    public void configureWith(String s) {
+    public void configureWith(String filename) {
         routingTable = new HashMap<String,int[]>();
         try {
-            File f = new File(s);
+            File f = new File(filename);
             BufferedReader br = new BufferedReader(new FileReader(f));
             String line = br.readLine();
             // First line should be our addr
@@ -196,14 +207,50 @@ public class DVNetwork extends Network implements Configurable  {
                 line = br.readLine();
             }
         } catch (IOException e) {
-            Logger.log("Could not read routing table from "+s);
+            Logger.log("Could not read routing table from "+ filename);
         }
     }
+    /**
+     * Parses a line in the config file and adds its information to the routing table
+     * @param line line to be parsed
+     */
     public void processLine(String line){
         String[] broken_line = line.split(" ");
         String addr = broken_line[0];
         int[] portAndHopCount  = new int[]{Integer.valueOf(broken_line[1]),1};
         routingTable.put(addr,portAndHopCount); 
+    }
+
+    /******************
+     * PACKET SNIFFING
+     ******************/
+
+    /**
+     * Allows packets to be sniffed by the application layer
+     */
+    public void setIsSniffable(){
+        this.isSniffable = true;
+    }
+    /**
+     * Part of packet sniffing.
+     * Allows messages to certain addresses to be edited by the application layer. 
+     */
+    public void setAddrToEditMsgsOf(String addrToEditMsgsOf){
+        this.addrToEditMsgsOf = addrToEditMsgsOf;
+    }
+
+    /**
+     * Replaces each char of sniffed msg with "z"
+     * @param np original NetworkPacket to be edited 
+     * @return edited network packet
+     */
+    public NetworkPacket editSniffedMsg(NetworkPacket np){
+        // null char shouldn't be edited
+        if(new String(np.data()).equals("\0")){
+            return np;
+        }
+        NetworkPacket newNp = new NetworkPacket(np.meta(),"z".getBytes());
+        return newNp;
     }
 
 }

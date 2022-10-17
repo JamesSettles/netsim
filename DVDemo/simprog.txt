@@ -16,5 +16,6 @@ conf-net n3 DVDemo/n3.txt
 conf-net n4 DVDemo/n4.txt
 conf-net n5 DVDemo/n5.txt
 power-on ALL
-launch n2 applicationLayer.LogSpoolApp
-launch n5 applicationLayer.DVAddrMsgSendApp n2|Hello n2, its me n5
+launch n2 applicationLayer.UnicastChatApp
+launch n1 applicationLayer.SniffEditApp n2
+launch n5 applicationLayer.UnicastChatApp n2|hey

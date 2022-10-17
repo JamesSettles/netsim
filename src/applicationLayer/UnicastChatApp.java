@@ -34,8 +34,6 @@ public class UnicastChatApp extends Application implements Runnable {
         }
 
     }
-        
-
     /**
      * Starts a thread to send each message character
      */
@@ -56,9 +54,12 @@ public class UnicastChatApp extends Application implements Runnable {
             String[] parts = args.split("\\|");
             dest = parts[0];
             myMsg = parts[1];
-        }
-        
+        }    
     }
+    /**
+     * Creates a network packet containing the null character, this is used to end msgs
+     * @return network packet to be sent out
+     */
     public NetworkPacket getNullCharNetworkPacket(){
         byte[] msg = "\0".getBytes();
         DVMeta meta = new DVMeta(dest,source);
@@ -83,7 +84,6 @@ public class UnicastChatApp extends Application implements Runnable {
                 getTransport().receiveFromApplication(this, getTransport().getNetworkLayer().toRawBytes(np));
             }
             getTransport().receiveFromApplication(this, getTransport().getNetworkLayer().toRawBytes(getNullCharNetworkPacket()));
-            //getTransport().removeApplication(this);
         }
     }
 }
