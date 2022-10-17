@@ -10,6 +10,7 @@ public class DVAddrMsgSendApp extends Application implements Runnable{
    /** message text to send */
    String myMsg;
    String dest;
+   String source;
 
    /**
     * Does nothing
@@ -37,8 +38,9 @@ public class DVAddrMsgSendApp extends Application implements Runnable{
    @Override
    public void recvLaunchArgs(String args) {
        String[] parts = args.split("\\|");
-       dest = parts[0];
-       myMsg = parts[1];
+       source = parts[0];
+       dest = parts[1];
+       myMsg = parts[2];
    }
 
    /**
@@ -48,7 +50,7 @@ public class DVAddrMsgSendApp extends Application implements Runnable{
    public void run() {
        byte[] msg = myMsg.getBytes();
        byte[] buf = new byte[1];
-       DVMeta meta = new DVMeta(dest);
+       DVMeta meta = new DVMeta(dest,source);
        NetworkPacket np = new NetworkPacket(meta, buf);
        for(int i=0; i<msg.length; i++) {
            try {

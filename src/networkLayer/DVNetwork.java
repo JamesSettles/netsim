@@ -1,24 +1,14 @@
 package networkLayer;
 
 import java.io.*;
-import java.net.ProtocolFamily;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import configurator.Configurable;
 import configurator.Logger;
-import exceptions.BadAddressSize;
 import exceptions.BadDestAddress;
-import exceptions.NetSimException;
-import linkLayer.Link;
 
 
-public class DVNetwork extends Network implements Configurable  {
-    // Routing table that maps address to an array containing port and hop count
-    HashMap<String, int[]> routingTable;
-    int numLinks;
-    String addr; // addr is a two char string
-    /*
+/*
      * Wake-up
     Step 1:
     -- Wake up and introspect (learn my address, my network, # of links)
@@ -40,6 +30,13 @@ public class DVNetwork extends Network implements Configurable  {
     Step 3:
     -- Go to step 1...
      */
+
+public class DVNetwork extends Network implements Configurable  {
+    // Routing table that maps address to an array containing port and hop count
+    HashMap<String, int[]> routingTable;
+    int numLinks;
+    String addr; // addr is a two char string
+    
     public void broadCastRoutingTable(){
         // Wake up msg formatted as myAddress:connection1,hopCount:conection2,hopcount etc 
         String wakeUpMsg = addr;
@@ -51,7 +48,7 @@ public class DVNetwork extends Network implements Configurable  {
         }
         byte[] msg = wakeUpMsg.getBytes();
         // Msg w destination 
-        DVMeta meta = new DVMeta("None");
+        DVMeta meta = new DVMeta("None",this.addr);
         NetworkPacket np = new NetworkPacket(meta, msg);
         for(int linkNum = 0;linkNum < numLinks;linkNum++){
             // Send out addr
@@ -96,11 +93,12 @@ public class DVNetwork extends Network implements Configurable  {
         // TODO Auto-generated method stub
         NetworkPacket np = fromRawBytes(f);
         String dest = ((DVMeta)np.meta()).getDest();
+        String source = ((DVMeta)np.meta()).getSource();
         byte[] data = np.data();
         if(dest.equals("None"))
             processReceivedBroadCast(new String(data));
         else if(dest.equals(this.addr)){
-            getTransportLayer().receiveFromNetwork(data);
+            getTransportLayer().receiveFromNetwork(toRawBytes(np));
         }else if(!dest.equals(this.addr)){
             // forward packet
             forwardPacket(dest, np);
@@ -118,6 +116,8 @@ public class DVNetwork extends Network implements Configurable  {
     }
 
     public void processReceivedBroadCast(String receivedBroadcast){
+        // Some of this code is technically redundant because the broadcast message no longer needs to
+        // contain the source of the msg
         Boolean receivedNewEntry = false;
         String addr;
         int port;
@@ -150,8 +150,11 @@ public class DVNetwork extends Network implements Configurable  {
     @Override
     public byte[] toRawBytes(NetworkPacket np) {
         // just construct a string and turn it into raw bytes
-        // dest + ; + data
-        byte[] processedNP = (((DVMeta)np.meta()).getDest() + ";").getBytes();
+        // dest + ; source + ; + data
+        if (((DVMeta)np.meta()).getSource() == null){
+            ((DVMeta)np.meta()).setSource(this.addr);
+        }
+        byte[] processedNP = (((DVMeta)np.meta()).getDest() + ";" + ((DVMeta)np.meta()).getSource() + ";").getBytes();
         byte[] result = Arrays.copyOf(processedNP, processedNP.length + np.data().length);
         System.arraycopy(np.data(), 0, result, processedNP.length, np.data().length);
         return result;
@@ -162,14 +165,17 @@ public class DVNetwork extends Network implements Configurable  {
         String strMsg = new String(bits);
         String data = "";
         String dest = "";
+        String source = "";
         String[] splitMsg = strMsg.split(";");
         for(int i = 0; i < splitMsg.length;i++){
             if(i==0)
                 dest = splitMsg[i];
+            else if (i == 1)
+                source = splitMsg[i];
             else
                 data+=splitMsg[i];
         }
-        DVMeta meta =  new DVMeta(dest);
+        DVMeta meta =  new DVMeta(dest,source);
         NetworkPacket np = new NetworkPacket(meta, data.getBytes());
         return np;
     }
@@ -200,6 +206,4 @@ public class DVNetwork extends Network implements Configurable  {
         routingTable.put(addr,portAndHopCount); 
     }
 
-    
-    
 }
